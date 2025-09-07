@@ -4,7 +4,7 @@ import os
 import django
 
 # ✅ Setup Django environment (only needed if running standalone)
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'your_project_name.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'LibraryProject.settings')
 django.setup()
 
 from relationship_app.models import Author, Book, Library, Librarian
@@ -31,7 +31,7 @@ def get_books_in_library(library_name):
     except Library.DoesNotExist:
         print(f"Library '{library_name}' not found.")
 
-# 3️⃣ Retrieve the librarian for a library
+# 3️⃣ Retrieve the librarian for a library (using reverse relationship)
 def get_librarian_for_library(library_name):
     try:
         library = Library.objects.get(name=library_name)
@@ -42,8 +42,29 @@ def get_librarian_for_library(library_name):
     except Librarian.DoesNotExist:
         print(f"No librarian assigned to '{library_name}'.")
 
+# 4️⃣ Retrieve the librarian for a library (using direct query)
+def get_librarian_for_library_direct(library_name):
+    try:
+        library = Library.objects.get(name=library_name)
+        librarian = Librarian.objects.get(library=library)  # Direct query using library object
+        print(f"\nLibrarian for {library.name}: {librarian.name}")
+    except Library.DoesNotExist:
+        print(f"Library '{library_name}' not found.")
+    except Librarian.DoesNotExist:
+        print(f"No librarian assigned to '{library_name}'.")
+
+# 5️⃣ Retrieve the librarian for a library (using library name directly)
+def get_librarian_for_library_by_name(library_name):
+    try:
+        librarian = Librarian.objects.get(library__name=library_name)  # Using double underscore lookup
+        print(f"\nLibrarian for {library_name}: {librarian.name}")
+    except Librarian.DoesNotExist:
+        print(f"No librarian assigned to '{library_name}'.")
+
 # 🧪 Sample usage
 if __name__ == "__main__":
     get_books_by_author("Chinua Achebe")
     get_books_in_library("Central Library")
     get_librarian_for_library("Central Library")
+    get_librarian_for_library_direct("Central Library")
+    get_librarian_for_library_by_name("Central Library")
