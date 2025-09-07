@@ -1,0 +1,130 @@
+<!-- librarian_view.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Librarian Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background-color: #28a745;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        .content-section {
+            margin-bottom: 30px;
+        }
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .book-card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #28a745;
+        }
+        .book-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .book-author {
+            color: #6c757d;
+            font-style: italic;
+        }
+        .libraries-list {
+            list-style: none;
+            padding: 0;
+        }
+        .libraries-list li {
+            background-color: #e9ecef;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .nav-links {
+            margin-top: 20px;
+        }
+        .nav-links a {
+            display: inline-block;
+            margin-right: 15px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .nav-links a:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Librarian Dashboard</h1>
+            <p>Welcome, {{ user.username }}! You have librarian privileges.</p>
+        </div>
+
+        <div class="content-section">
+            <h2>Recent Books</h2>
+            <div class="books-grid">
+                {% for book in books %}
+                <div class="book-card">
+                    <div class="book-title">{{ book.title }}</div>
+                    <div class="book-author">by {{ book.author.name }}</div>
+                </div>
+                {% empty %}
+                <p>No books available.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>Libraries</h2>
+            <ul class="libraries-list">
+                {% for library in libraries %}
+                <li>{{ library.name }}</li>
+                {% empty %}
+                <li>No libraries available.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="librarian-features">
+            <h2>Librarian Features</h2>
+            <ul>
+                <li>✅ Book management and cataloging</li>
+                <li>✅ Library operations</li>
+                <li>✅ Member assistance</li>
+                <li>✅ Inventory management</li>
+                <li>✅ Book recommendations</li>
+            </ul>
+        </div>
+
+        <div class="nav-links">
+            <a href="{% url 'list_books' %}">View All Books</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </div>
+</body>
+</html>
