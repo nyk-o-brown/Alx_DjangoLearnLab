@@ -16,7 +16,7 @@ class Book(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='books')
 
     class Meta:
-        Permissions = [
+        permissions = [
             ("can_add_book", "Can add book"),
             ("can_change_book", "Can change book")
             ("can_delete_book", "Can delete book")
