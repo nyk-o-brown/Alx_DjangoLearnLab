@@ -30,7 +30,7 @@ def search_books(request):
     form = SearchForm(request.GET)
     results =[]
     if form.is_valid():
-        query = from.cleaned_data['query']
+        query = form.cleaned_data['query']
         results = Book.objects.filter(title__icontains=query)
 
     return render(request, 'book_list.html', {'form': form, 'results': results})          
