@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Book
 from django.contrib.auth.decorators import permission_required
+from .forms import SearchForm
 
 
 @permission_required('books.can_edit', raise_exception=True)
@@ -25,4 +26,11 @@ def book_detail(request, book_id):
         return render(request, 'bookshelf/book_not_found.html', status=404)
 
 
-def edit_book()        
+def search_books(request):
+    form = SearchForm(request.GET)
+    results =[]
+    if form.is_valid():
+        query = from.cleaned_data['query']
+        results = Book.objects.filter(title__icontains=query)
+
+    return render(request, 'book_list.html', {'form': form, 'results': results})          
