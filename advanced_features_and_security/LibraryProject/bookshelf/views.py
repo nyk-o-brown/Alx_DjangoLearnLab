@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import Book
 from django.contrib.auth.decorators import permission_required
 from .forms import SearchForm
+from .forms import ExampleForm
 
 
 @permission_required('books.can_edit', raise_exception=True)
