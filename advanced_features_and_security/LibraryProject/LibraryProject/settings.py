@@ -29,6 +29,7 @@ DEBUG = False#Turned off debugs mode in production
 SECURE_BROWSER_XSS_FILTER = True  # Enables browser's XSS protection
 X_FRAME_OPTIONS = 'DENY'  # Prevents clickjacking by blocking iframe embedding
 SECURE_CONTENT_TYPE_NOSNIFF = True  # Stops browsers from guessing content types
+SECURE_SSL_REDIRECT = True
 
 # Secure cookies (only sent over HTTPS)
 CSRF_COOKIE_SECURE = True
