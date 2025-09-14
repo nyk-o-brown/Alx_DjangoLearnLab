@@ -129,6 +129,3 @@ AUTH_USER_MODEL = 'relationship_app.CustomUser'
 # Media files configuration for profile photos
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-
-
-AUTH_USER_MODEL = 'bookshelf.CustomUser'
