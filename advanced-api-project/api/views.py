@@ -9,12 +9,19 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 class BookFilter(filters.FilterSet):
     """
     FilterSet for Book model to enable advanced filtering capabilities.
-    Allows filtering books by title, publication year, and author name.
+    Allows filtering books by title, publication year range, and author name.
+    
+    Filter examples:
+    - /api/books/?title=Python
+    - /api/books/?min_year=2020
+    - /api/books/?max_year=2023
+    - /api/books/?author_name=John
+    - /api/books/?min_year=2020&max_year=2023
     """
-    title = filters.CharFilter(lookup_expr='icontains')
-    min_year = filters.NumberFilter(field_name='publication_year', lookup_expr='gte')
-    max_year = filters.NumberFilter(field_name='publication_year', lookup_expr='lte')
-    author_name = filters.CharFilter(field_name='author__name', lookup_expr='icontains')
+    title = filters.CharFilter(lookup_expr='icontains', help_text='Filter by book title (case-insensitive)')
+    min_year = filters.NumberFilter(field_name='publication_year', lookup_expr='gte', help_text='Filter by minimum publication year')
+    max_year = filters.NumberFilter(field_name='publication_year', lookup_expr='lte', help_text='Filter by maximum publication year')
+    author_name = filters.CharFilter(field_name='author__name', lookup_expr='icontains', help_text='Filter by author name (case-insensitive)')
 
     class Meta:
         model = Book
@@ -32,13 +39,34 @@ class BookList(generics.ListCreateAPIView):
     - Create: Only authenticated users can create new books
     
     Filtering:
-    - Supports filtering by title, publication year range, and author name
+    - title: Filter by book title (case-insensitive)
+    - min_year: Filter by minimum publication year
+    - max_year: Filter by maximum publication year
+    - author_name: Filter by author name (case-insensitive)
+    
+    Searching:
+    - Search across title and author name fields
+    - Example: /api/books/?search=python
+    
+    Ordering:
+    - Order by any field using the ordering parameter
+    - Examples: 
+      * /api/books/?ordering=title (ascending)
+      * /api/books/?ordering=-publication_year (descending)
+      * /api/books/?ordering=author__name,title (multiple fields)
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    filter_backends = (filters.DjangoFilterBackend,)
+    filter_backends = [
+        filters.DjangoFilterBackend,
+        drf_filters.SearchFilter,
+        drf_filters.OrderingFilter,
+    ]
     filterset_class = BookFilter
+    search_fields = ['title', 'author__name']
+    ordering_fields = ['title', 'publication_year', 'author__name']
+    ordering = ['-publication_year', 'title']  # default ordering
 
 class BookDetail(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -66,10 +94,25 @@ class AuthorList(generics.ListCreateAPIView):
     Permissions:
     - List: Allow any user to view the list
     - Create: Only authenticated users can create new authors
+    
+    Searching:
+    - Search across author name field
+    - Example: /api/authors/?search=john
+    
+    Ordering:
+    - Order by name
+    - Example: /api/authors/?ordering=name
     """
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+    filter_backends = [
+        drf_filters.SearchFilter,
+        drf_filters.OrderingFilter,
+    ]
+    search_fields = ['name']
+    ordering_fields = ['name']
+    ordering = ['name']  # default ordering
 
 class AuthorDetail(generics.RetrieveUpdateDestroyAPIView):
     """
