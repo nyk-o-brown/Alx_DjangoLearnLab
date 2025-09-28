@@ -13,9 +13,11 @@ class APIBaseTestCase(APITestCase):
     def setUp(self):
         """Set up test data and authentication."""
         # Create test user
+        self.username = 'testuser'
+        self.password = 'testpass123'
         self.user = User.objects.create_user(
-            username='testuser',
-            password='testpass123'
+            username=self.username,
+            password=self.password
         )
         
         # Create test authors
@@ -50,7 +52,14 @@ class APIBaseTestCase(APITestCase):
 
     def authenticate(self):
         """Helper method to authenticate requests."""
-        self.client.force_authenticate(user=self.user)
+        # First try to log in using credentials
+        login_successful = self.client.login(
+            username='testuser',
+            password='testpass123'
+        )
+        # If login fails, force authenticate as a fallback
+        if not login_successful:
+            self.client.force_authenticate(user=self.user)
 
 class BookCRUDTests(APIBaseTestCase):
     """Test CRUD operations for Book endpoints."""
@@ -150,6 +159,53 @@ class BookFilterSearchTests(APIBaseTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         years = [book['publication_year'] for book in response.data['results']]
         self.assertEqual(years, sorted(years, reverse=True))
+
+class AuthenticationTests(APIBaseTestCase):
+    """Test authentication functionality."""
+
+    def test_login(self):
+        """Test user can log in successfully."""
+        # First logout to ensure clean state
+        self.client.logout()
+        
+        # Try logging in with correct credentials
+        login_successful = self.client.login(
+            username=self.username,
+            password=self.password
+        )
+        self.assertTrue(login_successful)
+
+    def test_login_wrong_credentials(self):
+        """Test login fails with wrong credentials."""
+        # First logout to ensure clean state
+        self.client.logout()
+        
+        # Try logging in with wrong password
+        login_successful = self.client.login(
+            username=self.username,
+            password='wrongpassword'
+        )
+        self.assertFalse(login_successful)
+
+    def test_logout(self):
+        """Test user can log out successfully."""
+        # First login
+        self.client.login(
+            username=self.username,
+            password=self.password
+        )
+        
+        # Then logout
+        self.client.logout()
+        
+        # Try to access protected endpoint
+        response = self.client.post(self.book_list_url, {
+            'title': 'Test Book',
+            'publication_year': 2025,
+            'author': self.author1.id
+        })
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class AuthorTests(APIBaseTestCase):
     """Test Author endpoints."""
