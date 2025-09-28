@@ -2,6 +2,7 @@ from rest_framework import generics, permissions
 from django_filters import rest_framework as filters
 from .models import Book, Author
 from .serializers import BookSerializer, AuthorSerializer
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 class BookFilter(filters.FilterSet):
     """
@@ -111,3 +112,27 @@ class AuthorDetail(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method in ['PUT', 'PATCH', 'DELETE']:
             return [permissions.IsAuthenticated()]
         return [permissions.AllowAny()]
+
+class BookListView(ListView):
+    model = Book
+    template_name = 'api/book_list.html'
+    context_object_name = 'books'
+
+class BookDetailView(DetailView):
+    model = Book
+    template_name = 'api/book_detail.html'
+
+class BookCreateView(CreateView):
+    model = Book
+    template_name = 'api/book_form.html'
+    fields = ['title', 'publication_year', 'author']
+
+class BookUpdateView(UpdateView):
+    model = Book
+    template_name = 'api/book_form.html'
+    fields = ['title', 'publication_year', 'author']
+
+class BookDeleteView(DeleteView):
+    model = Book
+    template_name = 'api/book_confirm_delete.html'
+    success_url = '/books/'
