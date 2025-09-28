@@ -1,4 +1,5 @@
 from rest_framework import generics, permissions
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from django_filters import rest_framework as filters
 from .models import Book, Author
 from .serializers import BookSerializer, AuthorSerializer
@@ -34,16 +35,9 @@ class BookList(generics.ListCreateAPIView):
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = BookFilter
-    
-    def get_permissions(self):
-        """
-        Instantiate and return the list of permissions that this view requires.
-        """
-        if self.request.method == 'POST':
-            return [permissions.IsAuthenticated()]
-        return [permissions.AllowAny()]
 
 class BookDetail(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -59,14 +53,7 @@ class BookDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    
-    def get_permissions(self):
-        """
-        Instantiate and return the list of permissions that this view requires.
-        """
-        if self.request.method in ['PUT', 'PATCH', 'DELETE']:
-            return [permissions.IsAuthenticated()]
-        return [permissions.AllowAny()]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class AuthorList(generics.ListCreateAPIView):
     """
@@ -81,14 +68,7 @@ class AuthorList(generics.ListCreateAPIView):
     """
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
-    
-    def get_permissions(self):
-        """
-        Instantiate and return the list of permissions that this view requires.
-        """
-        if self.request.method == 'POST':
-            return [permissions.IsAuthenticated()]
-        return [permissions.AllowAny()]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class AuthorDetail(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -104,14 +84,7 @@ class AuthorDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
-    
-    def get_permissions(self):
-        """
-        Instantiate and return the list of permissions that this view requires.
-        """
-        if self.request.method in ['PUT', 'PATCH', 'DELETE']:
-            return [permissions.IsAuthenticated()]
-        return [permissions.AllowAny()]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class BookListView(ListView):
     model = Book
