@@ -1,0 +1,52 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}All Posts - Django Blog{% endblock %}
+
+{% block content %}
+<div class="posts-container">
+    <div class="posts-header">
+        <h1>All Blog Posts</h1>
+        {% if user.is_authenticated %}
+            <a href="{% url 'blog:post-create' %}" class="btn-create">Create New Post</a>
+        {% endif %}
+    </div>
+
+    <div class="posts">
+        {% for post in posts %}
+            <article class="post-card">
+                <header class="post-header">
+                    <h2><a href="{% url 'blog:post-detail' post.pk %}">{{ post.title }}</a></h2>
+                    <div class="post-meta">
+                        <span class="author">By {{ post.author }}</span>
+                        <span class="date">{{ post.created_date|date:"F j, Y" }}</span>
+                    </div>
+                </header>
+                <div class="post-excerpt">
+                    {{ post.content|truncatewords:30 }}
+                </div>
+                <footer class="post-footer">
+                    <a href="{% url 'blog:post-detail' post.pk %}" class="read-more">Read More</a>
+                </footer>
+            </article>
+        {% empty %}
+            <p class="no-posts">No posts available.</p>
+        {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+        <nav class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="page-link">&laquo; Previous</a>
+            {% endif %}
+
+            <span class="current-page">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="page-link">Next &raquo;</a>
+            {% endif %}
+        </nav>
+    {% endif %}
+</div>
+{% endblock %}
