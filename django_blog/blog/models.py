@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils import timezone
 
+
+
+
 class Post(models.Model):
     """
     Model representing a blog post.
@@ -24,8 +27,6 @@ class Post(models.Model):
         default='draft'
     )
     #ddududududududu
-    class Meta:
-        ordering = ['-published_date']
         
     def __str__(self):
         return self.title
