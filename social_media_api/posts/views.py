@@ -56,8 +56,8 @@ class PostViewSet(viewsets.ModelViewSet):
         Return posts from users that the current user follows,
         ordered by creation date (newest first).
         """
-        following = request.user.following.all()
-        posts = Post.objects.filter(author__in=following).order_by('-created_at')
+        following_users = request.user.following.all()
+        posts = Post.objects.filter(author__in=following_users).order_by('-created_at')
         page = self.paginate_queryset(posts)
         
         if page is not None:
