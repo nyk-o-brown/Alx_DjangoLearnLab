@@ -23,7 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/accounts/', include('accounts.urls', namespace='accounts')),
     path('api/posts/', include('posts.urls', namespace='posts')),
-    path('feed/', include('feed.urls',namespace='feed') ),
+    
 ]
 
 if settings.DEBUG:
