@@ -39,6 +39,15 @@ class PostViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    @action(detail=True, methods=['get'])
+    def like_status(self, request, pk=None):
+        """Get the like status and count for a post"""
+        post = self.get_object()
+        return Response({
+            'likes_count': post.likes.count(),
+            'has_liked': post.likes.filter(user=request.user).exists() if request.user.is_authenticated else False
+        })
     
     @action(detail=True, methods=['get'])
     def comments(self, request, pk=None):
@@ -48,6 +57,34 @@ class PostViewSet(viewsets.ModelViewSet):
         
         if page is not None:
             serializer = CommentSerializer(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data)
+        
+        serializer = CommentSerializer(comments, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def like(self, request, pk=None):
+        """Like or unlike a post"""
+        post = get_object_or_404(Post, pk=pk)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+        
+        if not created:
+            # User already liked the post, so unlike it
+            like.delete()
+            return Response({'status': 'unliked'}, status=HTTP_204_NO_CONTENT)
+        
+        # Create notification for the post author
+        if request.user != post.author:
+            Notification.objects.create(
+                recipient=post.author,
+                actor=request.user,
+                verb='like',
+                target_ct=ContentType.objects.get_for_model(post),
+                target_id=post.id
+            )
+        
+        serializer = LikeSerializer(like, context={'request': request})
+        return Response(serializer.data, status=HTTP_201_CREATED)
             return self.get_paginated_response(serializer.data)
         
         serializer = CommentSerializer(comments, many=True, context={'request': request})
