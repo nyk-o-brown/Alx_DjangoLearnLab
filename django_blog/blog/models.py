@@ -23,7 +23,7 @@ class Post(models.Model):
         ],
         default='draft'
     )
-    
+    #ddududududududu
     class Meta:
         ordering = ['-published_date']
         
