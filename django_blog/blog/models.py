@@ -12,12 +12,7 @@ class Post(models.Model):
     """
     title = models.CharField(max_length=200)
     content = models.TextField()
-    published_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
-    
-    # Additional fields for enhanced blog functionality
-    created_date = models.DateTimeField(auto_now_add=True)
-    updated_date = models.DateTimeField(auto_now=True)
     status = models.CharField(
         max_length=10,
         choices=[
@@ -26,6 +21,11 @@ class Post(models.Model):
         ],
         default='draft'
     )
+    
+    # Timestamp fields
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    published_date = models.DateTimeField(null=True, blank=True)
     #ddududududududu
         
     def __str__(self):
@@ -48,6 +48,16 @@ class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_comments')
     content = models.TextField()
+    
+    # Timestamp fields
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'Comment by {self.author} on {self.post.title}'
     created_date = models.DateTimeField(auto_now_add=True)
     approved = models.BooleanField(default=False)
     
