@@ -27,20 +27,20 @@ class Notification(models.Model):
         ContentType,
         blank=True,
         null=True,
-        on_delete=models.CASCADE,
-        related_name='target_obj'
+        related_name='notification_targets',
+        on_delete=models.CASCADE
     )
-    target_id = models.PositiveIntegerField(null=True, blank=True)
+    target_id = models.PositiveIntegerField(blank=True, null=True)
     target = GenericForeignKey('target_ct', 'target_id')
-
+    
+    timestamp = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-
+    
     class Meta:
-        ordering = ['-created_at']
+        ordering = ['-timestamp']
         indexes = [
-            models.Index(fields=['recipient', '-created_at']),
+            models.Index(fields=['recipient', '-timestamp']),
         ]
 
     def __str__(self):
-        return f'{self.actor.username} {self.get_verb_display()} - {self.created_at}'
+        return f'{self.actor.username} {self.get_verb_display()} - {self.timestamp}'
