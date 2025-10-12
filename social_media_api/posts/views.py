@@ -50,6 +50,23 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = CommentSerializer(comments, many=True, context={'request': request})
         return Response(serializer.data)
 
+    @action(detail=False, methods=['get'])
+    def feed(self, request):
+        """
+        Return posts from users that the current user follows,
+        ordered by creation date (newest first).
+        """
+        following = request.user.following.all()
+        posts = Post.objects.filter(author__in=following).order_by('-created_at')
+        page = self.paginate_queryset(posts)
+        
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+            
+        serializer = self.get_serializer(posts, many=True)
+        return Response(serializer.data)
+
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
