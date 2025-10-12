@@ -2,6 +2,19 @@
 
 {% block title %}Home - Django Blog{% endblock %}
 
+
+
+
+
+{% block content %}
+<h2>Welcome to the Django Blog</h2>
+<p><a href="{% url 'login' %}">Login</a> | <a href="{% url 'register' %}">Register</a></p>
+{% endblock %}
+
+
+
+
+
 {% block content %}
     <div class="posts">
         {% for post in posts %}
