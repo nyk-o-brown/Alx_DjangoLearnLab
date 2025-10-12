@@ -1,7 +1,6 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
 from django.contrib.contenttypes.models import ContentType
 from django_filters import rest_framework as filters
 from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
@@ -65,7 +64,7 @@ class PostViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def like(self, request, pk=None):
         """Like or unlike a post"""
-        post = get_object_or_404(Post, pk=pk)
+        post = generics.get_object_or_404(Post, pk=pk)
         like, created = Like.objects.get_or_create(user=request.user, post=post)
         
         if not created:
@@ -153,5 +152,5 @@ class CommentViewSet(viewsets.ModelViewSet):
         return queryset
     
     def perform_create(self, serializer):
-        post = get_object_or_404(Post, pk=self.kwargs['post_pk'])
+        post = generics.get_object_or_404(Post, pk=self.kwargs['post_pk'])
         serializer.save(author=self.request.user, post=post)
