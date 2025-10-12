@@ -33,7 +33,7 @@ class Post(models.Model):
     
     def get_absolute_url(self):
         """Returns the URL to access a detailed record for this post."""
-        return reverse('post-detail', args=[str(self.id)])
+        return reverse('blog:post-detail', args=[str(self.id)])
     
     def publish(self):
         """Publish the blog post."""
