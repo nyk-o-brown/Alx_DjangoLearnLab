@@ -1,0 +1,36 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}
+    {% if form.instance.pk %}
+        Edit Comment
+    {% else %}
+        Add Comment
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>
+        {% if form.instance.pk %}
+            Edit Comment
+        {% else %}
+            Add Comment
+        {% endif %}
+    </h2>
+    
+    <form method="post" class="comment-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">
+                {% if form.instance.pk %}
+                    Update Comment
+                {% else %}
+                    Add Comment
+                {% endif %}
+            </button>
+            <a href="{% url 'blog:post-detail' post.pk %}" class="btn-cancel">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

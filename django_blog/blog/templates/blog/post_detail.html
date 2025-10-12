@@ -22,10 +22,27 @@
 
     <section class="comments">
         <h3>Comments</h3>
+        {% if user.is_authenticated %}
+            <div class="comment-form">
+                <h4>Add a Comment</h4>
+                <form action="{% url 'blog:comment-create' post.pk %}" method="post">
+                    {% csrf_token %}
+                    {{ comment_form.as_p }}
+                    <button type="submit" class="btn-submit">Post Comment</button>
+                </form>
+            </div>
+        {% endif %}
+        
         {% for comment in post.comments.all %}
             <div class="comment">
                 <div class="comment-meta">
                     {{ comment.author }} | {{ comment.created_date|date:"F j, Y" }}
+                    {% if user == comment.author %}
+                        <div class="comment-actions">
+                            <a href="{% url 'blog:comment-update' comment.pk %}">Edit</a>
+                            <a href="{% url 'blog:comment-delete' comment.pk %}" class="text-danger">Delete</a>
+                        </div>
+                    {% endif %}
                 </div>
                 <div class="comment-content">
                     {{ comment.content|linebreaks }}
