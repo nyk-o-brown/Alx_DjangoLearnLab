@@ -13,5 +13,4 @@ app_name = 'posts'
 urlpatterns = [
     path('', include(router.urls)),
     path('', include(posts_router.urls)),
-    path('feed/', include('feed.urls',namespace='feed') ),
 ]

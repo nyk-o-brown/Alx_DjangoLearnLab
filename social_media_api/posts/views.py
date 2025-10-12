@@ -2,9 +2,12 @@ from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.contrib.contenttypes.models import ContentType
 from django_filters import rest_framework as filters
-from .models import Post, Comment
-from .serializers import PostSerializer, CommentSerializer
+from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from .models import Post, Comment, Like
+from .serializers import PostSerializer, CommentSerializer, LikeSerializer
+from notifications.models import Notification
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
     """
@@ -49,6 +52,40 @@ class PostViewSet(viewsets.ModelViewSet):
         
         serializer = CommentSerializer(comments, many=True, context={'request': request})
         return Response(serializer.data)
+        
+    @action(detail=True, methods=['post'])
+    def like(self, request, pk=None):
+        post = self.get_object()
+        user = request.user
+        
+        # Check if the user has already liked the post
+        like, created = Like.objects.get_or_create(user=user, post=post)
+        
+        if created:
+            # Create notification for the post author
+            if post.author != user:
+                Notification.objects.create(
+                    recipient=post.author,
+                    actor=user,
+                    verb='like',
+                    target_ct=ContentType.objects.get_for_model(post),
+                    target_id=post.id
+                )
+            return Response(LikeSerializer(like, context={'request': request}).data, 
+                          status=HTTP_201_CREATED)
+        return Response({'detail': 'You have already liked this post'})
+        
+    @action(detail=True, methods=['post'])
+    def unlike(self, request, pk=None):
+        post = self.get_object()
+        user = request.user
+        
+        try:
+            like = Like.objects.get(user=user, post=post)
+            like.delete()
+            return Response(status=HTTP_204_NO_CONTENT)
+        except Like.DoesNotExist:
+            return Response({'detail': 'You have not liked this post'})
 
     @action(detail=False, methods=['get'])
     def feed(self, request):
