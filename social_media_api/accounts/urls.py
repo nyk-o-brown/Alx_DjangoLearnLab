@@ -1,12 +1,13 @@
 from django.urls import path
 from .views import (
     RegisterView, CustomAuthToken, ProfileView,
-    FollowUserView, UnfollowUserView
+    FollowUserView, UnfollowUserView, UserListView
 )
 
 app_name = 'accounts'
 
 urlpatterns = [
+    path('users/', UserListView.as_view(), name='user-list'),
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', CustomAuthToken.as_view(), name='login'),
     path('profile/', ProfileView.as_view(), name='profile'),

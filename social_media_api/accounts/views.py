@@ -5,8 +5,24 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import get_user_model
 from .serializers import UserRegistrationSerializer, UserProfileSerializer, UserMinimalSerializer
+from django.contrib.auth import get_user_model
 
 User = get_user_model()
+
+class UserListView(generics.GenericAPIView):
+    """List all users"""
+    queryset = User.objects.all()  # This is equivalent to CustomUser.objects.all()
+    serializer_class = UserMinimalSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        users = self.get_queryset()
+        page = self.paginate_queryset(users)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(users, many=True)
+        return Response(serializer.data)
 
 class RegisterView(generics.CreateAPIView):
     """Handle user registration"""
