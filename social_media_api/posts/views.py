@@ -51,11 +51,15 @@ class PostViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
     
     def get_queryset(self):
-        return Comment.objects.filter(post_id=self.kwargs['post_pk'])
+        queryset = Comment.objects.all()
+        if 'post_pk' in self.kwargs:
+            return queryset.filter(post_id=self.kwargs['post_pk'])
+        return queryset
     
     def perform_create(self, serializer):
         post = get_object_or_404(Post, pk=self.kwargs['post_pk'])
