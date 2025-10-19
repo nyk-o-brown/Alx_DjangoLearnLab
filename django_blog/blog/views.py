@@ -114,7 +114,13 @@ def delete_comment(request, comment_id):
     comment.delete()
     return redirect('post_detail', pk=post_id)
 
+class PostByTagListView(ListView):
+    model = Post
+    template_name = 'blog/tag_posts.html'
+    context_object_name = 'posts'
 
+    def get_queryset(self):
+        return Post.objects.filter(tags__slug=self.kwargs['tag_slug'])
 
 
 

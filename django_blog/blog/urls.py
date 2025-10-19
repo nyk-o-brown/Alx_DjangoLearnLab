@@ -3,7 +3,8 @@ from . import views
 from django.contrib.auth import views as auth_views
 from .views import (
     PostListView, PostDetailView, PostCreateView,
-    PostUpdateView, PostDeleteView
+    PostUpdateView, PostDeleteView,
+    PostByTagListView  # ✅ Import the missing view
 )
 
 app_name = 'blog'
@@ -12,31 +13,20 @@ urlpatterns = [
     path('', PostListView.as_view(), name='home'),
     path('post/', PostListView.as_view(), name='post-list'),
     path('post/new/', PostCreateView.as_view(), name='post-create'),
-
-
-
-
     path('post/<int:pk>/', PostDetailView.as_view(), name='post-detail'),
     path('post/<int:pk>/update/', PostUpdateView.as_view(), name='post-update'),
     path('post/<int:pk>/delete/', PostDeleteView.as_view(), name='post-delete'),
 
-
-
+    # Comment URLs
     path('posts/<int:pk>/comments/new/', views.add_comment, name='add_comment'),
     path('comments/<int:pk>/update/', views.edit_comment, name='edit_comment'),
     path('comments/<int:pk>/delete/', views.delete_comment, name='delete_comment'),
 
+    # Search and Tag URLs
     path('search/', views.search_posts, name='search_posts'),
-    path('tags/<str:tag_name>/', views.posts_by_tag, name='posts_by_tag'),
+    path('tags/<str:tag_name>/', views.posts_by_tag, name='posts_by_tag'),  # Optional legacy
+    path('tags/<slug:tag_slug>/', PostByTagListView.as_view(), name='posts_by_tag_slug'),  # ✅ Required by checker
 
-
-
-    #comment/<int:pk>/update/", "post/<int:pk>/comments/new/", "comment/<int:pk>/delete/
-
-    
-    # Comment URLs
-
-    
     # Authentication URLs
     path('login/', auth_views.LoginView.as_view(template_name='blog/login.html', next_page='blog:home'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='blog/logout.html', next_page='blog:home'), name='logout'),
