@@ -26,9 +26,13 @@ urlpatterns = [
     path('comments/<int:pk>/update/', views.edit_comment, name='edit_comment'),
     path('comments/<int:pk>/delete/', views.delete_comment, name='delete_comment'),
 
+    path('search/', views.search_posts, name='search_posts'),
+    path('tags/<str:tag_name>/', views.posts_by_tag, name='posts_by_tag'),
+
+
 
     #comment/<int:pk>/update/", "post/<int:pk>/comments/new/", "comment/<int:pk>/delete/
-]
+
     
     # Comment URLs
 

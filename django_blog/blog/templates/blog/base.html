@@ -41,6 +41,10 @@
     </main>
 
     <footer>
+        <form method="get" action="{% url 'search_posts' %}">
+  <input type="text" name="q" placeholder="Search posts..." class="form-control">
+</form>
+
         <p>&copy; {% now "Y" %} Django Blog. All rights reserved.</p>
     </footer>
 

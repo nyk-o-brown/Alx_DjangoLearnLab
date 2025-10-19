@@ -2,6 +2,12 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils import timezone
+#######3
+# blog/models.py
+from taggit.managers import TaggableManager
+
+
+
 
 
 
@@ -21,6 +27,7 @@ class Post(models.Model):
         ],
         default='draft'
     )
+    tags = TaggableManager()
     
     # Timestamp fields
     created_at = models.DateTimeField(auto_now_add=True)
@@ -89,3 +96,13 @@ class Category(models.Model):
     def get_absolute_url(self):
         """Returns the URL to access a list of posts in this category."""
         return reverse('category-detail', args=[str(self.id)])
+
+
+############3
+# blog/models.py
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+class Post(models.Model):
+    ...
+    tags = models.ManyToManyField(Tag, related_name='posts')
