@@ -84,21 +84,16 @@ class PostViewSet(viewsets.ModelViewSet):
         
         serializer = LikeSerializer(like, context={'request': request})
         return Response(serializer.data, status=HTTP_201_CREATED)
-            return self.get_paginated_response(serializer.data)
         
-        serializer = CommentSerializer(comments, many=True, context={'request': request})
-        return Response(serializer.data)
-        
+    @action(detail=True, methods=['post'])
     @action(detail=True, methods=['post'])
     def like(self, request, pk=None):
         post = self.get_object()
         user = request.user
-        
-        # Check if the user has already liked the post
+
         like, created = Like.objects.get_or_create(user=user, post=post)
-        
+
         if created:
-            # Create notification for the post author
             if post.author != user:
                 Notification.objects.create(
                     recipient=post.author,
@@ -107,8 +102,8 @@ class PostViewSet(viewsets.ModelViewSet):
                     target_ct=ContentType.objects.get_for_model(post),
                     target_id=post.id
                 )
-            return Response(LikeSerializer(like, context={'request': request}).data, 
-                          status=HTTP_201_CREATED)
+            return Response(LikeSerializer(like, context={'request': request}).data, status=HTTP_201_CREATED)
+
         return Response({'detail': 'You have already liked this post'})
         
     @action(detail=True, methods=['post'])
