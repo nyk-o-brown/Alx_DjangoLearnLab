@@ -24,6 +24,7 @@ SECRET_KEY = 'django-insecure-_jiu6lma0i#uzjg6*#%f5@b($4$%f9-w73kyy2s+_2(dx=0f07
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+PORT =8000
 
 ALLOWED_HOSTS = ['yourdomain.com', 'api.yourdomain.com', 'render.com']
 
